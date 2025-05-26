@@ -2,6 +2,7 @@ package ma.enset.gym_management.web;
 
 import ma.enset.gym_management.dto.ExerciseDto;
 import ma.enset.gym_management.dto.ProgramDto;
+import ma.enset.gym_management.dto.RepastDto;
 import ma.enset.gym_management.enums.ProgramLevel;
 import ma.enset.gym_management.enums.ProgramType;
 import ma.enset.gym_management.exceptions.*;
@@ -66,5 +67,22 @@ public class ProgramRestController {
         return ResponseEntity.ok(programService.addExerciseToProgram(programId,exerciseId));
     }
 
-
+    @PutMapping(path = "/updateProgram/{programId}")
+    public ResponseEntity<ProgramDto> updateProgram(@PathVariable Long programId, @RequestBody ProgramDto programDto) throws ProgramIdNotFoundException {
+        programDto.setId(programId);
+        return ResponseEntity.ok(programService.updateProgram(programId,programDto));
+    }
+    @DeleteMapping(path = "/deleteProgram/{programId}")
+    public ResponseEntity<String> deleteProgram(@PathVariable Long programId) throws ProgramIdNotFoundException {
+        programService.deleteProgram(programId);
+        return ResponseEntity.ok("le programme est supprimé");
+    }
+    @PostMapping(path ="/{programId}/repast/{repastId}")
+    public ResponseEntity<ProgramDto> addRepastToProgram (@PathVariable Long programId, @PathVariable Long repastId) throws ProgramIdNotFoundException, RepastIdNotFoundException, RepastAlreadyAssignedToProgramException {
+        return ResponseEntity.ok(programService.addRepastToProgram(programId,repastId));
+    }
+    @GetMapping("/listRepastOfProgram/{program_Id}")
+    public ResponseEntity<List<RepastDto>> listRepastsOfProgram(@PathVariable Long program_Id) throws ProgramIdNotFoundException {
+        return ResponseEntity.ok(programService.listRepastsOfProgram(program_Id)) ;
+    }
 }

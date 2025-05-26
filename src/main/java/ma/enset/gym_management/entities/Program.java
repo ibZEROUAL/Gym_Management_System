@@ -32,6 +32,9 @@ public class Program {
     @ManyToMany(mappedBy = "programs",fetch = FetchType.EAGER)
     private Collection<Exercise> exercises=new ArrayList<>();
 
+    @ManyToMany(mappedBy = "programs",fetch = FetchType.EAGER)
+    private Collection<Repast> repasts=new ArrayList<>();
+
 
     // Redéfinir equals et hashCode par id uniquement
     @Override

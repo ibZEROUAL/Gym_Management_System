@@ -1,10 +1,8 @@
 package ma.enset.gym_management.web;
 
-import ma.enset.gym_management.dto.ExerciseDto;
 import ma.enset.gym_management.dto.ProgramDto;
-import ma.enset.gym_management.dto.RepastDto;
+import ma.enset.gym_management.dto.ProgramResponseDto;
 import ma.enset.gym_management.enums.ProgramLevel;
-import ma.enset.gym_management.enums.ProgramType;
 import ma.enset.gym_management.exceptions.*;
 import ma.enset.gym_management.services.ProgramService;
 import org.springframework.http.ResponseEntity;
@@ -22,29 +20,29 @@ public class ProgramRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProgramDto>> allPrograms() throws ProgramsNotFoundException {
+    public ResponseEntity<List<ProgramResponseDto>> allPrograms() throws ProgramsNotFoundException {
 
         return ResponseEntity.ok(programService.allPrograms());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<ProgramDto> getProgramByID(@PathVariable Long id) throws ProgramIdNotFoundException {
+    public ResponseEntity<ProgramResponseDto> getProgramByID(@PathVariable Long id) throws ProgramIdNotFoundException {
         return ResponseEntity.ok(programService.getProgramByID(id));
     }
     @GetMapping(path = "/searchByName")
-    public ResponseEntity<ProgramDto>getProgramByNom(@RequestParam("name") String nom) throws ProgramNameNotFoundException {
+    public ResponseEntity<ProgramResponseDto>getProgramByNom(@RequestParam("name") String nom) throws ProgramNameNotFoundException {
         return ResponseEntity.ok(programService.getProgramByNom(nom));
     }
 
     @GetMapping(path = "/searchByLevel")
-    public ResponseEntity<List<ProgramDto>> getProgramByLevel(@RequestParam("level") ProgramLevel level) throws ProgramsOfLevelNotFoundException {
+    public ResponseEntity<List<ProgramResponseDto>> getProgramByLevel(@RequestParam("level") ProgramLevel level) throws ProgramsOfLevelNotFoundException {
         return ResponseEntity.ok(programService.getProgramByLevel(level));
     }
     @GetMapping(path = "/searchByVisibility")
-    public ResponseEntity<List<ProgramDto>> getProgrammeByVisibility(@RequestParam boolean visible) throws ProgramsByVisibilityNotFoundException {
+    public ResponseEntity<List<ProgramResponseDto>> getProgrammeByVisibility(@RequestParam boolean visible) throws ProgramsByVisibilityNotFoundException {
         return ResponseEntity.ok(programService.getProgramByVisibility(visible));
     }
-    @GetMapping(path = "/searchByType")
+   /* @GetMapping(path = "/searchByType")
     public ResponseEntity<List<ProgramDto>> getProgramByType(@RequestParam ProgramType type) throws ProgramsByTypeNotFoundException {
         return ResponseEntity.ok(programService.getProgramByType(type));
     }
@@ -53,23 +51,21 @@ public class ProgramRestController {
     public ResponseEntity<List<ProgramDto>> getProgramByTypeAndLevel(@RequestParam ProgramType type, @RequestParam ProgramLevel level) throws ProgramsByTypeAndLevelNotFoundException {
         return ResponseEntity.ok(programService.getProgramByTypeAndLevel(type,level));
     }
-    @GetMapping("/listExeOfProgram/{program_Id}")
-        public ResponseEntity<List<ExerciseDto>> listExercisesOfProgram(@PathVariable Long program_Id) throws ProgramIdNotFoundException, ListExercisesOfProgramNotFoundException {
-        return ResponseEntity.ok(programService.listExercisesOfProgram(program_Id)) ;
-    }
+
+    */
+
 
     @PostMapping(path = "/create")
-    public ResponseEntity<ProgramDto> createProgram(@RequestBody ProgramDto programDto) throws ProgramAlreadyExistsException {
+    public ResponseEntity<ProgramResponseDto> createProgram(@RequestBody ProgramDto programDto) throws ProgramAlreadyExistsException {
         return ResponseEntity.ok(programService.createProgram(programDto)) ;
     }
     @PostMapping(path ="/{programId}/exercises/{exerciseId}")
-    public ResponseEntity<ProgramDto> addExerciseToProgram (@PathVariable Long programId,@PathVariable Long exerciseId) throws ProgramIdNotFoundException, ExerciseIdNotFoundException, ListExercisesOfProgramNotFoundException, ExerciseAlreadyAssignedToProgramException {
+    public ResponseEntity<ProgramResponseDto> addExerciseToProgram (@PathVariable Long programId,@PathVariable Long exerciseId) throws ProgramIdNotFoundException, ExerciseIdNotFoundException, ExerciseAlreadyAssignedToProgramException, ListExercisesOfProgramNotFoundException {
         return ResponseEntity.ok(programService.addExerciseToProgram(programId,exerciseId));
     }
 
     @PutMapping(path = "/updateProgram/{programId}")
-    public ResponseEntity<ProgramDto> updateProgram(@PathVariable Long programId, @RequestBody ProgramDto programDto) throws ProgramIdNotFoundException {
-        programDto.setId(programId);
+    public ResponseEntity<ProgramResponseDto> updateProgram(@PathVariable Long programId, @RequestBody ProgramDto programDto) throws ProgramIdNotFoundException {
         return ResponseEntity.ok(programService.updateProgram(programId,programDto));
     }
     @DeleteMapping(path = "/deleteProgram/{programId}")
@@ -78,11 +74,8 @@ public class ProgramRestController {
         return ResponseEntity.ok("le programme est supprimé");
     }
     @PostMapping(path ="/{programId}/repast/{repastId}")
-    public ResponseEntity<ProgramDto> addRepastToProgram (@PathVariable Long programId, @PathVariable Long repastId) throws ProgramIdNotFoundException, RepastIdNotFoundException, RepastAlreadyAssignedToProgramException {
+    public ResponseEntity<ProgramResponseDto> addRepastToProgram (@PathVariable Long programId, @PathVariable Long repastId) throws ProgramIdNotFoundException, RepastIdNotFoundException, RepastAlreadyAssignedToProgramException {
         return ResponseEntity.ok(programService.addRepastToProgram(programId,repastId));
     }
-    @GetMapping("/listRepastOfProgram/{program_Id}")
-    public ResponseEntity<List<RepastDto>> listRepastsOfProgram(@PathVariable Long program_Id) throws ProgramIdNotFoundException {
-        return ResponseEntity.ok(programService.listRepastsOfProgram(program_Id)) ;
-    }
+
 }

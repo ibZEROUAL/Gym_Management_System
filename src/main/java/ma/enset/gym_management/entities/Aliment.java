@@ -19,4 +19,5 @@ public class Aliment {
     @JoinColumn(name = "repas_id")
     private Repast repast;
 
+
 }

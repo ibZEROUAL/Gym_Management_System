@@ -2,18 +2,20 @@ package ma.enset.gym_management.services;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import ma.enset.gym_management.dto.ExerciseDto;
-import ma.enset.gym_management.dto.ProgramDto;
-import ma.enset.gym_management.dto.RepastDto;
+import ma.enset.gym_management.dto.*;
+import ma.enset.gym_management.entities.Coach;
 import ma.enset.gym_management.entities.Exercise;
 import ma.enset.gym_management.entities.Repast;
 import ma.enset.gym_management.enums.*;
 import ma.enset.gym_management.entities.Program;
 import ma.enset.gym_management.exceptions.*;
 import ma.enset.gym_management.mappers.ProgramMapperImpl;
+import ma.enset.gym_management.repositories.CoachRepository;
 import ma.enset.gym_management.repositories.ExerciseRepository;
 import ma.enset.gym_management.repositories.ProgramRepository;
 import ma.enset.gym_management.repositories.RepastRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,144 +28,142 @@ import java.util.stream.Collectors;
 public class ProgramServiceImpl implements ProgramService {
     private final ProgramRepository programRepository;
     private final ExerciseRepository exerciseRepository;
-    private final ProgramMapperImpl dtoMapper;
     private final RepastRepository repastRepository;
-    private final ExerciseService exerciseService;
-    private final RepastService repastService;
+    private final CoachRepository coachRepository;
+    private final ProgramMapperImpl dtoMapper;
+
 
 
     //Logger log= LoggerFactory.getLogger(this.getClass().getName());
 
 
-    public ProgramServiceImpl(ProgramRepository programRepository, ExerciseRepository exerciseRepository, ProgramMapperImpl dtoMapper, RepastRepository repastRepository, ExerciseService exerciseService, RepastService repastService) {
+    public ProgramServiceImpl(ProgramRepository programRepository, ExerciseRepository exerciseRepository, ProgramMapperImpl dtoMapper, CoachRepository coachRepository, RepastRepository repastRepository) {
         this.programRepository = programRepository;
         this.exerciseRepository = exerciseRepository;
         this.dtoMapper = dtoMapper;
         this.repastRepository = repastRepository;
-        this.exerciseService = exerciseService;
-        this.repastService = repastService;
+        this.coachRepository = coachRepository;
     }
     @Override
-    public List<ProgramDto> allPrograms() throws ProgramsNotFoundException {
-        List<ProgramDto> programs = programRepository.findAll()
+    public List<ProgramResponseDto> allPrograms() throws ProgramsNotFoundException {
+        log.info("Recherche des programmes ");
+
+        List<ProgramResponseDto> programResponseDto = programRepository.findAll()
                 .stream()
-                .map(dtoMapper::mapToProgramDto)
+                .map(dtoMapper::mapToProgramRespDto)
                 .toList();
-        if (programs.isEmpty()){
+        if (programResponseDto.isEmpty()){
+            log.warn("Aucun programme trouvé");
             throw new ProgramsNotFoundException("Programmes non trouvé");
         }
-        return programs;
+        return programResponseDto;
     }
     @Override
-    public ProgramDto getProgramByID(Long id) throws ProgramIdNotFoundException {
+    public ProgramResponseDto getProgramByID(Long id) throws ProgramIdNotFoundException {
+        log.info("Recherche des programmes avec le Id = {}", id);
+
         Program program = programRepository.findById(id).orElseThrow(()->
                 new ProgramIdNotFoundException("Programme avec le ID '"+id+"' non trouvé"));
-        return dtoMapper.mapToProgramDto(program);
+        return dtoMapper.mapToProgramRespDto(program);
     }
     @Override
-    public ProgramDto getProgramByNom(String nom) throws ProgramNameNotFoundException {
+    public ProgramResponseDto getProgramByNom(String nom) throws ProgramNameNotFoundException {
+        log.info("Recherche des programmes avec le nom = {}", nom);
         Program program= programRepository.findByNom(nom);
         if (program==null) {
+            log.warn("Aucun programme trouvé avec le nom = {}", nom);
             throw new ProgramNameNotFoundException("Programme avec le nom '"+nom+"' non trouvé");
         }
-        return dtoMapper.mapToProgramDto(program);
+        return dtoMapper.mapToProgramRespDto(program);
     }
     @Override
-    public List<ProgramDto> getProgramByLevel(ProgramLevel level) throws ProgramsOfLevelNotFoundException {
-        List<ProgramDto> program= programRepository.findByNiveau(level)
+    public List<ProgramResponseDto> getProgramByLevel(ProgramLevel level) throws ProgramsOfLevelNotFoundException {
+        log.info("Recherche des programmes avec level = {}", level);
+        List<ProgramResponseDto> programResponseDto= programRepository.findByNiveau(level)
                 .stream()
-                .map(dtoMapper::mapToProgramDto)
+                .map(dtoMapper::mapToProgramRespDto)
                 .collect(Collectors.toList());
-        if (program.isEmpty()) {
+        if (programResponseDto.isEmpty()) {
+            log.warn("Aucun programme trouvé avec level = {}", level);
             throw new ProgramsOfLevelNotFoundException(
                     "Programmes avec le niveau '"+level+"' non trouvé"
             );
         }
-        return program;
+        return programResponseDto;
     }
 
     @Override
-    public List<ProgramDto> getProgramByVisibility(boolean visible) throws ProgramsByVisibilityNotFoundException {
+    public List<ProgramResponseDto> getProgramByVisibility(boolean visible) throws ProgramsByVisibilityNotFoundException {
         log.info("Recherche des programmes avec visibilité = {}", visible);
-        List<ProgramDto> programs= programRepository.findByVisibilite(visible)
+        List<ProgramResponseDto> programResponseDto= programRepository.findByVisibilite(visible)
                 .stream()
-                .map(dtoMapper::mapToProgramDto)
+                .map(dtoMapper::mapToProgramRespDto)
                 .collect(Collectors.toList());
-        if (programs.isEmpty()) {
+        if (programResponseDto.isEmpty()) {
             log.warn("Aucun programme trouvé avec visibilité = {}", visible);
             throw new ProgramsByVisibilityNotFoundException(
                     "Aucun programme trouvé avec la visibilité : " + visible
             );
         }
-        return programs;
+        return programResponseDto;
     }
 
+    /* @Override
+     public List<ProgramDto> getProgramByType(ProgramType type) throws ProgramsByTypeNotFoundException {
+         log.info("Recherche des programmes avec le type = {}", type);
+         List<ProgramDto> programs= programRepository.findByType(type)
+                 .stream()
+                 .map(dtoMapper::mapToProgramDto)
+                 .collect(Collectors.toList());
+         if (programs.isEmpty()) {
+             log.warn("Aucun programme trouvé avec le type = {}", type);
+             throw new ProgramsByTypeNotFoundException(
+                     "Aucun programme trouvé avec le type : " + type
+             );
+         }
+         return program
+     }
+     /* @Override
+     public List<ProgramDto> getProgramByTypeAndLevel(ProgramType type, ProgramLevel level) throws ProgramsByTypeAndLevelNotFoundException {
+             log.info("Recherche des programmes avec le type = {} et le niveau = {}", type, level);
+
+             List<ProgramDto> programs = programRepository.findByTypeAndNiveau(type, level)
+                     .stream()
+                     .map(dtoMapper::mapToProgramDto)
+                     .collect(Collectors.toList());
+
+             if (programs.isEmpty()) {
+                 log.warn("Aucun programme trouvé avec le type = {} et le niveau = {}", type, level);
+                 throw new ProgramsByTypeAndLevelNotFoundException(
+                         "Aucun programme trouvé avec le type : " + type + " et le niveau : " + level
+                 );
+             }
+             return programs;
+     }*/
+
+
     @Override
-    public List<ProgramDto> getProgramByType(ProgramType type) throws ProgramsByTypeNotFoundException {
-        log.info("Recherche des programmes avec le type = {}", type);
-        List<ProgramDto> programs= programRepository.findByType(type)
+    public List<ProgramResponseDto> getListProgramsOfCoach(Long coachId) throws CoachIdNotFoundException, ListProgramsOfCoachNotFoundException {
+        log.info("lister les programmes de coach avec l'ID = {}", coachId);
+
+        Coach coach =coachRepository.findById(coachId).orElseThrow(()->
+                new CoachIdNotFoundException("Coach avec le ID '" + coachId + "' non trouvé."));
+
+        List<ProgramResponseDto> programResponseDto = programRepository.findByCoach(coach)
                 .stream()
-                .map(dtoMapper::mapToProgramDto)
-                .collect(Collectors.toList());
-        if (programs.isEmpty()) {
-            log.warn("Aucun programme trouvé avec le type = {}", type);
-            throw new ProgramsByTypeNotFoundException(
-                    "Aucun programme trouvé avec le type : " + type
-            );
-        }
-        return programs;
-    }
-    @Override
-    public List<ProgramDto> getProgramByTypeAndLevel(ProgramType type, ProgramLevel level) throws ProgramsByTypeAndLevelNotFoundException {
-            log.info("Recherche des programmes avec le type = {} et le niveau = {}", type, level);
-
-            List<ProgramDto> programs = programRepository.findByTypeAndNiveau(type, level)
-                    .stream()
-                    .map(dtoMapper::mapToProgramDto)
-                    .collect(Collectors.toList());
-
-            if (programs.isEmpty()) {
-                log.warn("Aucun programme trouvé avec le type = {} et le niveau = {}", type, level);
-                throw new ProgramsByTypeAndLevelNotFoundException(
-                        "Aucun programme trouvé avec le type : " + type + " et le niveau : " + level
-                );
-            }
-            return programs;
-    }
-    @Override
-    public List<ExerciseDto> listExercisesOfProgram(Long programId) throws ProgramIdNotFoundException {
-        log.info("lister les exercices de programme avec l'ID = {}", programId);
-        ProgramDto programDto = getProgramByID(programId);
-
-        List<ExerciseDto> exercisesOfProgram = exerciseRepository.findByPrograms(dtoMapper.mapToProgram(programDto))
-                .stream()
-                .map(dtoMapper::mapToExerciseDto)
-                .collect(Collectors.toList());
-
-        /*if (exercisesOfProgram.isEmpty()){
-            log.warn("Aucun exercice trouvé pour le programme '{}'", programDto.getNom());
-            throw new ListExercisesOfProgramNotFoundException(
-                    "La liste des exercices du programme '" +programDto.getNom()+ "' est vide."
-            );
-        }*/
-        return exercisesOfProgram;
-    }
-
-    @Override
-    public List<RepastDto> listRepastsOfProgram(Long programId) throws ProgramIdNotFoundException {
-        log.info("lister les repas de programme avec l'ID = {}", programId);
-        ProgramDto programDto = getProgramByID(programId);
-
-        List<RepastDto> repastOfProgram = repastRepository.findByPrograms(dtoMapper.mapToProgram(programDto))
-                .stream()
-                .map(dtoMapper::mapToRepastDto)
+                .map(dtoMapper::mapToProgramRespDto)
                 .toList();
 
-        return repastOfProgram;
+        if (programResponseDto.isEmpty()){
+            log.warn("Aucun programmes trouvé pour le coach '{}' ", coach.getNom());
+            throw new ListProgramsOfCoachNotFoundException("La liste des programmes du coach '"+coach.getNom()+"' est vide.");
+        }
+        return programResponseDto;
     }
 
+
     @Override
-    public ProgramDto createProgram(ProgramDto programDto) throws ProgramAlreadyExistsException {
+    public ProgramResponseDto createProgram(ProgramDto programDto) throws ProgramAlreadyExistsException {
         log.info("Saving new program");
         Program program =programRepository.findByNom(programDto.getNom());
         if (program != null) {
@@ -171,33 +171,37 @@ public class ProgramServiceImpl implements ProgramService {
                     "Le '"+ programDto.getNom() +"' est existe déjà!"
             );
         }
-        Program newProgram= programRepository.save(dtoMapper.mapToProgram(programDto));
-        return dtoMapper.mapToProgramDto(newProgram);
+        Program newProgram= programRepository.save(dtoMapper.mapDtoToProgram(programDto));
+        return dtoMapper.mapToProgramRespDto(newProgram);
     }
     @Override
-    public ProgramDto updateProgram(Long programId, ProgramDto programDto) throws ProgramIdNotFoundException {
+    public ProgramResponseDto updateProgram(Long programId, ProgramDto programDto) throws ProgramIdNotFoundException {
         log.info("Mise à jour du programme avec le ID = {}", programId);
-        getProgramByID(programId);
-        Program program= programRepository.save(dtoMapper.mapToProgram(programDto));
-        return dtoMapper.mapToProgramDto(program);
+        Program program = dtoMapper.mapRespToProgram(getProgramByID(programId));
+        BeanUtils.copyProperties(programDto ,program);
+        Program programUpdate= programRepository.save(program);
+        return dtoMapper.mapToProgramRespDto(programUpdate);
     }
     @Override
     public void deleteProgram(Long programId) throws ProgramIdNotFoundException {
-        getProgramByID(programId);
+        log.info("Supprimé le programme avec le ID = {}", programId);
         programRepository.deleteById(programId);
     }
     @Override
-    public ProgramDto addExerciseToProgram(Long programId, Long exerciseId) throws ProgramIdNotFoundException, ExerciseIdNotFoundException, ExerciseAlreadyAssignedToProgramException, ListExercisesOfProgramNotFoundException {
-        log.info("Ajout d'un repas (ID = {}) au programme (ID = {})", exerciseId, programId);
-        Program program =dtoMapper.mapToProgram(getProgramByID(programId));
+    public ProgramResponseDto addExerciseToProgram(Long programId, Long exerciseId) throws ProgramIdNotFoundException, ExerciseIdNotFoundException, ExerciseAlreadyAssignedToProgramException, ListExercisesOfProgramNotFoundException {
+        log.info("Ajouter d'un repas (ID = {}) au programme (ID = {})", exerciseId, programId);
+        Program program =dtoMapper.mapRespToProgram(getProgramByID(programId));
 
-        Exercise exercise =dtoMapper.mapToExercise(exerciseService.getExerciseByID(exerciseId)) ;
-        List<Exercise> exercisesOfProgram = listExercisesOfProgram(programId)
+        Exercise exercise =exerciseRepository.findById(exerciseId).orElseThrow(()->
+                new ExerciseIdNotFoundException("Exercise avec le ID '"+exerciseId+"' non trouvé"));
+        /*  List<Exercise> exercisesOfProgram = exerciseService.listExercisesOfProgram(programId)
                 .stream()
-                .map(dtoMapper::mapToExercise)
+                .map(dtoMapper::mapRespToExercise)
                 .toList();
-
+        */
+        List<Exercise> exercisesOfProgram =program.getExercises().stream().toList();
         if(exercisesOfProgram.contains(exercise)){
+            log.warn("L'exercice avec le nom '{}' est déjà associé à ce programme '{}'.",exercise.getNom(),program.getNom());
             throw new ExerciseAlreadyAssignedToProgramException(
                     "L'exercice avec le nom "+exercise.getNom()+" est déjà associé à ce programme "+program.getNom()+"."
             );
@@ -210,20 +214,18 @@ public class ProgramServiceImpl implements ProgramService {
          Program savedProgram = programRepository.save(program);
 
         log.info("Exercise '{}' ajouté au programme '{}'", exercise.getNom(), savedProgram.getNom());
-        return dtoMapper.mapToProgramDto(savedProgram);
+        return dtoMapper.mapToProgramRespDto(savedProgram);
     }
 
     @Override
-    public ProgramDto addRepastToProgram(Long programId, Long repastId) throws ProgramIdNotFoundException, RepastIdNotFoundException, RepastAlreadyAssignedToProgramException {
+    public ProgramResponseDto addRepastToProgram(Long programId, Long repastId) throws ProgramIdNotFoundException, RepastIdNotFoundException, RepastAlreadyAssignedToProgramException {
         log.info("Ajout d'un repas (ID = {}) au programme (ID = {})", repastId, programId);
-        Program program =dtoMapper.mapToProgram(getProgramByID(programId));
+        Program program =dtoMapper.mapRespToProgram(getProgramByID(programId));
 
-        Repast repast =dtoMapper.mapToRepast(repastService.getRepastById(repastId));
-        List<Repast> repastsOfProgram = listRepastsOfProgram(programId)
-                .stream()
-                .map(dtoMapper::mapToRepast)
-                .toList();
+        Repast repast =repastRepository.findById(repastId).orElseThrow(()->
+                new RepastIdNotFoundException("Repast avec le ID '"+repastId+"' non trouvé"));
 
+        List<Repast> repastsOfProgram = program.getRepasts().stream().toList();
         if(repastsOfProgram.contains(repast)){
             log.warn("Le repas '{}' est déjà associé au programme '{}'",repast.getNom(),program.getNom());
             throw new RepastAlreadyAssignedToProgramException(
@@ -238,7 +240,7 @@ public class ProgramServiceImpl implements ProgramService {
         Program savedProgram = programRepository.save(program);
 
         log.info("Repas '{}' ajouté au programme '{}'", repast.getNom(), savedProgram.getNom());
-        return dtoMapper.mapToProgramDto(savedProgram);
+        return dtoMapper.mapToProgramRespDto(savedProgram);
     }
 
 }

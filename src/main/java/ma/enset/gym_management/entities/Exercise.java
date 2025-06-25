@@ -15,6 +15,7 @@ public class Exercise {
 
     @Column(unique = true)
     private String nom;
+
     private String description;
 
     @Temporal(TemporalType.TIME)
@@ -22,6 +23,7 @@ public class Exercise {
 
     @Enumerated(EnumType.STRING)
     private ExerciseCategorie categorie;
+
     private String image_exercise;
 
     @ManyToMany(fetch = FetchType.EAGER)

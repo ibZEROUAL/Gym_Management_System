@@ -3,7 +3,7 @@ package ma.enset.gym_management.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
-import ma.enset.gym_management.enums.RepastObjictive;
+import ma.enset.gym_management.enums.RepastObjective;
 import ma.enset.gym_management.enums.RepastType;
 
 import java.util.ArrayList;
@@ -15,12 +15,15 @@ public class Repast {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String nom;
+
     @Enumerated(EnumType.STRING)
     private RepastType type;
+
     @Enumerated(EnumType.STRING)
-    private RepastObjictive objective;
+    private RepastObjective objective;
 
     private int calories;
     private int proteines;

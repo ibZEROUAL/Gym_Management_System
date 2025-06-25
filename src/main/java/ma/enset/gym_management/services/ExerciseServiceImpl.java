@@ -2,11 +2,15 @@ package ma.enset.gym_management.services;
 
 import lombok.extern.slf4j.Slf4j;
 import ma.enset.gym_management.dto.ExerciseDto;
+import ma.enset.gym_management.dto.ExerciseResponseDto;
 import ma.enset.gym_management.entities.Exercise;
+import ma.enset.gym_management.entities.Program;
 import ma.enset.gym_management.enums.ExerciseCategorie;
 import ma.enset.gym_management.exceptions.*;
 import ma.enset.gym_management.mappers.ProgramMapperImpl;
 import ma.enset.gym_management.repositories.ExerciseRepository;
+import ma.enset.gym_management.repositories.ProgramRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,60 +23,82 @@ import java.util.stream.Collectors;
 public class ExerciseServiceImpl implements ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final ProgramMapperImpl dtoMapper;
+    private final ProgramRepository programRepository;
 
-    public ExerciseServiceImpl(ExerciseRepository exerciseRepository, ProgramMapperImpl dtoMapper) {
+    public ExerciseServiceImpl(ExerciseRepository exerciseRepository, ProgramMapperImpl dtoMapper, ProgramRepository programRepository) {
         this.exerciseRepository = exerciseRepository;
         this.dtoMapper = dtoMapper;
+        this.programRepository = programRepository;
     }
 
     @Override
-    public List<ExerciseDto> allExercises() throws ExercisesNotFoundException {
+    public List<ExerciseResponseDto> allExercises() throws ExercisesNotFoundException {
         log.info("Recherche de tous les exercices ");
-        List<ExerciseDto> exercises = exerciseRepository.findAll()
+        List<ExerciseResponseDto> exerciseResponseDto = exerciseRepository.findAll()
                 .stream()
-                .map(dtoMapper:: mapToExerciseDto)
+                .map(dtoMapper:: mapToExerciseRespDto)
                 .toList();
-        if (exercises.isEmpty()){
+        if (exerciseResponseDto.isEmpty()){
             log.warn("Aucun exercice trouvé");
             throw new ExercisesNotFoundException("Exercices non trouvé");
         }
-        return exercises;
+        return exerciseResponseDto;
     }
     @Override
-    public ExerciseDto getExerciseByID(Long id) throws ExerciseIdNotFoundException {
+    public ExerciseResponseDto getExerciseByID(Long id) throws ExerciseIdNotFoundException {
         log.info("Recherche d'exercice avec le Id ={} ",id);
         Exercise exercise = exerciseRepository.findById(id).orElseThrow(()->
                 new ExerciseIdNotFoundException("Exercise avec le ID '"+id+"' non trouvé"));
-        return dtoMapper.mapToExerciseDto(exercise);
+        return dtoMapper.mapToExerciseRespDto(exercise);
     }
     @Override
-    public ExerciseDto getExerciseByNom(String nom) throws ExerciseNameNotFoundException {
+    public ExerciseResponseDto getExerciseByNom(String nom) throws ExerciseNameNotFoundException {
         log.info("Recherche d'exercice avec le nom ={} ",nom);
         Exercise exercise= exerciseRepository.findByNom(nom);
         if (exercise==null) {
             log.warn("Aucun exercice trouvé avec le nom ={} ",nom);
             throw new ExerciseNameNotFoundException("Exercice avec le nom '"+nom+"' non trouvé");
         }
-        return dtoMapper.mapToExerciseDto(exercise);
+        return dtoMapper.mapToExerciseRespDto(exercise);
     }
     @Override
-    public List<ExerciseDto> getExercisesByCategory(ExerciseCategorie category) throws ExercisesByCategorieNotFoundException {
+    public List<ExerciseResponseDto> getExercisesByCategory(ExerciseCategorie category) throws ExercisesByCategorieNotFoundException {
         log.info("Recherche d'exercice avec le categorie ={} ",category);
-        List<ExerciseDto> exercise = exerciseRepository.findByCategorie(category)
+        List<ExerciseResponseDto> exerciseResponseDto = exerciseRepository.findByCategorie(category)
                 .stream()
-                .map(dtoMapper::mapToExerciseDto)
+                .map(dtoMapper::mapToExerciseRespDto)
                 .collect(Collectors.toList());
-        if (exercise.isEmpty()) {
+        if (exerciseResponseDto.isEmpty()) {
             log.warn("Aucun exercice trouvé de set categorie '{}'", category);
             throw new ExercisesByCategorieNotFoundException(
                     "Aucun exercice trouvé de ste categorie :" +category
             );
         }
-        return exercise;
+        return exerciseResponseDto;
     }
+
     @Override
-    public ExerciseDto createExercise(ExerciseDto exerciseDto) throws ExerciseAlreadyExistsException {
-        log.info("Recherche a un exercice avec le nom ={} ", exerciseDto.getNom());
+    public List<ExerciseResponseDto> listExercisesOfProgram(Long programId) throws ProgramIdNotFoundException, ListExercisesOfProgramNotFoundException {
+        log.info("lister les exercices de programme avec l'ID = {}", programId);
+
+        Program program = programRepository.findById(programId).orElseThrow(
+                ()->new ProgramIdNotFoundException("Programme avec le ID '"+programId+"' non trouvé"));
+
+        List<Exercise> exercisesOfProgram = exerciseRepository.findByPrograms_Id(programId);
+
+        if (exercisesOfProgram.isEmpty()){
+            log.warn("Aucun exercice trouvé pour le programme '{}'", program.getNom());
+            throw new ListExercisesOfProgramNotFoundException(
+                    "La liste des exercices du programme '" +program.getNom()+ "' est vide."
+            );
+        }
+
+        return exercisesOfProgram.stream().map(dtoMapper::mapToExerciseRespDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public ExerciseResponseDto createExercise(ExerciseDto exerciseDto) throws ExerciseAlreadyExistsException {
+        log.info("creé un exercice avec le nom ={} ", exerciseDto.getNom());
 
         Exercise exercise =exerciseRepository.findByNom(exerciseDto.getNom());
         if (exercise != null){
@@ -82,17 +108,19 @@ public class ExerciseServiceImpl implements ExerciseService {
             );
         }
 
-        return dtoMapper.mapToExerciseDto(exerciseRepository.save(dtoMapper.mapToExercise(exerciseDto)));
+        return dtoMapper.mapToExerciseRespDto(exerciseRepository.save(dtoMapper.mapDtoToExercise(exerciseDto)));
     }
     @Override
-    public ExerciseDto updateExercise(Long exerciseId, ExerciseDto exerciseDto) throws ExerciseIdNotFoundException {
+    public ExerciseResponseDto updateExercise(Long exerciseId, ExerciseDto exerciseDto) throws ExerciseIdNotFoundException {
         log.info("Mise à jour d'exercice avec le ID = {}", exerciseId);
-        getExerciseByID(exerciseId);
-        return dtoMapper.mapToExerciseDto(exerciseRepository.save(dtoMapper.mapToExercise(exerciseDto)));
+        Exercise exercise = dtoMapper.mapRespToExercise(getExerciseByID(exerciseId));
+        BeanUtils.copyProperties(exerciseDto,exercise);
+
+        return dtoMapper.mapToExerciseRespDto(exerciseRepository.save(exercise));
     }
     @Override
     public void deleteExercise(Long exerciseId) throws ExerciseIdNotFoundException {
-        getExerciseByID(exerciseId);
+        log.info("supprimé l'exercice avec le id ={}",exerciseId);
         exerciseRepository.deleteById(exerciseId);
     }
 

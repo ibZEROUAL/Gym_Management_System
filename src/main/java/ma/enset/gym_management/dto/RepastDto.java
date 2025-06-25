@@ -1,13 +1,14 @@
 package ma.enset.gym_management.dto;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ma.enset.gym_management.enums.RepastObjictive;
+import ma.enset.gym_management.enums.RepastObjective;
 import ma.enset.gym_management.enums.RepastType;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,10 +16,9 @@ import ma.enset.gym_management.enums.RepastType;
 @Setter
 
 public class RepastDto {
-    private Long id;
     private String nom;
     private RepastType type;
-    private RepastObjictive objective;
+    private RepastObjective objective;
 
     private int calories;
     private int proteines;
@@ -27,6 +27,8 @@ public class RepastDto {
     private int fibres;
 
     private String image;
+
+    //private Collection<AlimentDto> alimentsDto = new ArrayList<>();
 
 
 }

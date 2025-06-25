@@ -1,24 +1,31 @@
 package ma.enset.gym_management.services;
 
 import ma.enset.gym_management.dto.RepastDto;
-import ma.enset.gym_management.enums.RepastObjictive;
+import ma.enset.gym_management.dto.RepastResponseDto;
+import ma.enset.gym_management.enums.RepastObjective;
 import ma.enset.gym_management.enums.RepastType;
 import ma.enset.gym_management.exceptions.*;
 
 import java.util.List;
 
 public interface RepastService {
-    RepastDto updateRepast(Long repastId, RepastDto repastDto) throws RepastIdNotFoundException;
 
-    List<RepastDto> getRepastByType(RepastType type) throws RepastByTypeNotFoundException;
+    List<RepastResponseDto> allRepasts() throws RepastsNotFoundException;
 
-    void deleterepast(Long repastId) throws RepastIdNotFoundException;
+    RepastResponseDto getRepastById(Long id) throws RepastIdNotFoundException;
 
-    List<RepastDto> getRepastByObjective(RepastObjictive objictive) throws RepastByObjictiveNotFoundException;
+    List<RepastResponseDto> getRepastByType(RepastType type) throws RepastByTypeNotFoundException;
 
-    List<RepastDto> getRepastByTypeAndObjective(RepastType type, RepastObjictive objictive) throws RepastByTypeAndObjictiveNotFoundException;
+    List<RepastResponseDto> getRepastByObjective(RepastObjective objictive) throws RepastByObjectiveNotFoundException;
 
-    RepastDto createRepast(RepastDto repastDto) throws RepastAlreadyExistsException;
-    List<RepastDto> allRepasts() throws RepastsNotFoundException;
-    RepastDto getRepastById(Long id) throws RepastIdNotFoundException;
+    List<RepastResponseDto> getRepastByTypeAndObjective(RepastType type, RepastObjective objective) throws RepastByTypeAndObjectiveNotFoundException;
+
+    List<RepastResponseDto> listRepastsOfProgram(Long programId) throws ProgramIdNotFoundException;
+
+    RepastResponseDto createRepast(RepastDto repastDto) throws RepastAlreadyExistsException;
+
+    RepastResponseDto updateRepast(Long repastId, RepastDto repastDto) throws RepastIdNotFoundException;
+
+    void deleteRepast(Long repastId) throws RepastIdNotFoundException;
+
 }

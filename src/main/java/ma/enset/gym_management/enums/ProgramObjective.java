@@ -1,5 +1,5 @@
 package ma.enset.gym_management.enums;
 
-public enum RepastObjictive {
+public enum ProgramObjective {
     PerteDePoids,PriseDeMasseMusculaire,MaintienDuPoids,RecompositionCorporelle
 }

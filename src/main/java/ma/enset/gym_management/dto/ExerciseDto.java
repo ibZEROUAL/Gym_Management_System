@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Date;
 @AllArgsConstructor @NoArgsConstructor @Getter @Setter
 public class ExerciseDto {
-    private Long id;
     private String nom;
     private String description;
     private Date duree;

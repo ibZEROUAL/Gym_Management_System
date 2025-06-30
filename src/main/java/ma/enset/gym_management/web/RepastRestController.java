@@ -1,18 +1,21 @@
 package ma.enset.gym_management.web;
 
 
+import jakarta.validation.Valid;
 import ma.enset.gym_management.dto.RepastDto;
 import ma.enset.gym_management.dto.RepastResponseDto;
 import ma.enset.gym_management.enums.*;
 import ma.enset.gym_management.exceptions.*;
 import ma.enset.gym_management.services.RepastService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
-@RequestMapping("/repast")
+@RequestMapping("/api/repast")
 public class RepastRestController {
     private final RepastService repastService;
     public RepastRestController(RepastService repastService) {
@@ -45,12 +48,12 @@ public class RepastRestController {
         return ResponseEntity.ok(repastService.listRepastsOfProgram(program_Id)) ;
     }
     @PostMapping(path = "/createRepast")
-    public ResponseEntity<RepastResponseDto> createRepast(@RequestBody RepastDto repastDto) throws RepastAlreadyExistsException {
+    public ResponseEntity<RepastResponseDto> createRepast(@Valid @RequestBody RepastDto repastDto) throws RepastAlreadyExistsException {
         return ResponseEntity.ok(repastService.createRepast(repastDto));
     }
 
     @PutMapping(path = "/updateRepast/{repastId}")
-    public ResponseEntity<RepastResponseDto> updateRepast(@PathVariable Long repastId, @RequestBody RepastDto repastDto) throws ExerciseIdNotFoundException, RepastIdNotFoundException {
+    public ResponseEntity<RepastResponseDto> updateRepast(@PathVariable Long repastId,@Valid @RequestBody RepastDto repastDto) throws ExerciseIdNotFoundException, RepastIdNotFoundException {
         return ResponseEntity.ok(repastService.updateRepast(repastId,repastDto));
     }
     @DeleteMapping(path = "/deleterepast/{repastId}")

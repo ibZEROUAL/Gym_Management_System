@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 
 import ma.enset.gym_management.dto.AdherentDto;
 import ma.enset.gym_management.dto.AdherentResponseDTO;
+
 import ma.enset.gym_management.exceptions.AdherentAlreadyExistsException;
 import ma.enset.gym_management.exceptions.AdherentIdNotFoundException;
-import ma.enset.gym_management.exceptions.AdherentUserNameNotFoundException;
+import ma.enset.gym_management.exceptions.AdherentEmailNotFoundException;
+import ma.enset.gym_management.exceptions.SubscriptionIdNotFoundException;
 import ma.enset.gym_management.services.AdherentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,7 +20,7 @@ import java.util.List;
 
 @Validated
 @RestController
-@RequestMapping(path = "/Adherent")
+@RequestMapping(path = "/api/Adherent")
 public class AdherentRestController {
 
     public AdherentRestController(AdherentService adherentService) {
@@ -37,9 +39,9 @@ public class AdherentRestController {
         AdherentResponseDTO adherent = adherentService.getAdherentById(id);
         return ResponseEntity.ok(adherent);
     }
-    @GetMapping(path = "/searchByUsername")
-    public ResponseEntity<AdherentResponseDTO> getAdherentByUserName(@Valid @RequestParam String username) throws AdherentUserNameNotFoundException {
-        AdherentResponseDTO adherent = adherentService.getAdherentByUserName(username);
+    @GetMapping(path = "/searchByEmail")
+    public ResponseEntity<AdherentResponseDTO> getAdherentByUserName(@Valid @RequestParam String username) throws AdherentEmailNotFoundException {
+        AdherentResponseDTO adherent = adherentService.getAdherentByEmail(username);
         return ResponseEntity.ok(adherent);
     }
 
@@ -57,6 +59,12 @@ public class AdherentRestController {
     public ResponseEntity<AdherentResponseDTO> updateAdherent(@PathVariable Long id, @Valid @RequestBody AdherentDto adherentDto) throws AdherentIdNotFoundException {
       AdherentResponseDTO adherentDtoA = adherentService.updateAdherent(id,adherentDto);
       return ResponseEntity.ok(adherentDtoA);
+    }
+
+    @PostMapping("/addSubscription/{adherentId}/{subscriptionId}")
+    public ResponseEntity<AdherentResponseDTO> addSubscriptionToAdherent(@PathVariable Long adherentId,@PathVariable Long subscriptionId) throws AdherentIdNotFoundException, SubscriptionIdNotFoundException {
+        AdherentResponseDTO addSubscription = adherentService.addSubscriptionToAdherent(adherentId, subscriptionId);
+        return ResponseEntity.ok(addSubscription);
     }
 
     @DeleteMapping(path = "/deleteAdherent/{id}")

@@ -16,7 +16,8 @@ public class CoachingSessionDto {
 
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDateTime dateInscriptionSession;
-    private String statute;
+
+    private boolean statute;
 
     private Adherent adherent;
 

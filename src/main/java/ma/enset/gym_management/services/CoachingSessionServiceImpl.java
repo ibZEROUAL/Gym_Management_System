@@ -1,5 +1,6 @@
 package ma.enset.gym_management.services;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import ma.enset.gym_management.dto.CoachingSessionResponseDto;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Slf4j
+@AllArgsConstructor
 public class CoachingSessionServiceImpl implements CoachingSessionService {
     ProgramMapperImpl dtoMapper;
     AdherentRepository adherentRepository;
@@ -56,7 +58,7 @@ public class CoachingSessionServiceImpl implements CoachingSessionService {
     }
 
     @Override
-    public List<CoachingSessionResponseDto> getCoachingSessionByStatute(String statute) throws CoachingSessionStatuteNoteFoundException {
+    public List<CoachingSessionResponseDto> getCoachingSessionByStatute(boolean statute) throws CoachingSessionStatuteNoteFoundException {
         log.info("Recherche de séance de coaching avec le statue= {}", statute);
         List<CoachingSession> coachingSession = coachingSessionRepository.findByStatute(statute);
         if (coachingSession.isEmpty()) {
@@ -69,19 +71,29 @@ public class CoachingSessionServiceImpl implements CoachingSessionService {
                 .collect(Collectors.toList());
     }
     @Override
-    public CoachingSessionResponseDto reservationCoachingSession(LocalDateTime dateTime, String coachUserName, String adherentUserName) throws AdherentUserNameNotFoundException, CoachUserNameNotFoundException {
+    public CoachingSessionResponseDto reservationCoachingSession(LocalDateTime dateTime, String coachUserName, String adherentUserName) throws AdherentEmailNotFoundException, CoachEmailNotFoundException {
+
         log.info("reservation de l'adherent {} des séance d'entrainement",adherentUserName);
-        Adherent adherent = adherentRepository.findByUsername(adherentUserName);
+
+        Adherent adherent = adherentRepository.findByEmail(adherentUserName);
         if (adherent == null){
             log.warn("Aucune séance d'entraînement trouvée avec le userName {}: ",adherentUserName);
-            throw new AdherentUserNameNotFoundException("Aucune séance d'entraînement trouvée avec le userName: "+adherentUserName);
-        }
-        Coach coach = coachRepository.findByUsername(coachUserName);
-        if (coach == null){
-            log.warn("Aucune coache trouvée avec le userName {}: ",coachUserName);
-            throw new CoachUserNameNotFoundException("Aucune coach trouvée avec le userName: "+coachUserName);
+            throw new AdherentEmailNotFoundException("Aucune séance d'entraînement trouvée avec le userName: "+adherentUserName);
         }
 
-        return null;
+        Coach coach = coachRepository.findByEmail(coachUserName);
+        if (coach == null){
+            log.warn("Aucune coache trouvée avec le userName {}: ",coachUserName);
+            throw new CoachEmailNotFoundException("Aucune coach trouvée avec le userName: "+coachUserName);
+        }
+
+        CoachingSession coachingSession = new CoachingSession();
+        coachingSession.setAdherent(adherent);
+        coachingSession.setCoach(coach);
+        coachingSession.setDateInscriptionSession(dateTime);
+
+        CoachingSession newSession = coachingSessionRepository.save(coachingSession);
+
+        return dtoMapper.mapCoachingToCoachingRespDto(newSession);
     }
 }

@@ -1,5 +1,6 @@
 package ma.enset.gym_management.services;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.enset.gym_management.dto.ProgramResponseDto;
 import ma.enset.gym_management.dto.RepastDto;
@@ -22,16 +23,12 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Slf4j
+@AllArgsConstructor
 public class RepastServiceImpl implements RepastService {
     private final RepastRepository repastRepository;
     private final ProgramRepository programRepository;
     private final ProgramMapperImpl dtoMapper;
 
-    public RepastServiceImpl(RepastRepository repastRepository, ProgramMapperImpl dtoMapper, ProgramRepository programRepository) {
-        this.repastRepository = repastRepository;
-        this.dtoMapper = dtoMapper;
-        this.programRepository = programRepository;
-    }
 
     @Override
     public List<RepastResponseDto> allRepasts() throws RepastsNotFoundException {

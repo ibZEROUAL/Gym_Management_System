@@ -12,7 +12,7 @@ import java.util.List;
 
 @Validated
 @RestController
-@RequestMapping("/Coach")
+@RequestMapping("/api/Coach")
 public class CoachRestController {
     CoachService coachService;
     public CoachRestController(CoachService coachService) {
@@ -27,18 +27,23 @@ public class CoachRestController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CoachResponseDto> getProgramByID(@PathVariable Long id) throws CoachIdNotFoundException {
+    public ResponseEntity<CoachResponseDto> getCoachByID(@PathVariable Long id) throws CoachIdNotFoundException {
         return ResponseEntity.ok(coachService.getCoachByID(id));
     }
 
 
     @GetMapping(path = "/searchBySpeciality")
-    public ResponseEntity<List<CoachResponseDto>> getProgramBySpeciality(@RequestParam("Speciality") String speciality) throws CoachSpecialityNotFoundException {
+    public ResponseEntity<List<CoachResponseDto>> getCoachBySpeciality(@RequestParam("Speciality") String speciality) throws CoachSpecialityNotFoundException {
         return ResponseEntity.ok(coachService.getCoachBySpeciality(speciality));
     }
 
+    @GetMapping(path = "/searchByEmail")
+    public ResponseEntity<CoachResponseDto> getCoachByEmail(@RequestParam("email") String email) throws CoachEmailNotFoundException {
+        return ResponseEntity.ok(coachService.getCoachByEmail(email));
+    }
+
     @PostMapping("/addNewCoach")
-    public ResponseEntity<CoachResponseDto> addNewCoach(@RequestBody @Valid CoachDto coachDto) throws CoachAlreadyExistsException {
+    public ResponseEntity<CoachResponseDto> addNewCoach(@Valid @RequestBody CoachDto coachDto) throws CoachAlreadyExistsException {
         CoachResponseDto newCoach = coachService.addCoach(coachDto);
         return ResponseEntity.ok(newCoach);
     }
@@ -51,8 +56,8 @@ public class CoachRestController {
     }
 
     @DeleteMapping(path = "/deleteCoach/{id}")
-    public ResponseEntity<String> deleteAdherent(@PathVariable Long id){
-        coachService.deleteCoch(id);
+    public ResponseEntity<String> deleteCoach(@PathVariable Long id){
+        coachService.deleteCoach(id);
         return ResponseEntity.ok("le coach est supprimé");
     }
 

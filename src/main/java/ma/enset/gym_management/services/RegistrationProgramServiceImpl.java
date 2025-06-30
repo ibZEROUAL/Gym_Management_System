@@ -1,5 +1,6 @@
 package ma.enset.gym_management.services;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import ma.enset.gym_management.dto.*;
@@ -14,9 +15,7 @@ import ma.enset.gym_management.repositories.RegistrationProgramRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,19 +23,13 @@ import java.util.stream.Collectors;
 @Transactional
 @Builder
 @Slf4j
+@AllArgsConstructor
 public class RegistrationProgramServiceImpl implements RegistrationProgramService {
     private final RegistrationProgramRepository registrationProgramRepository;
     private final ProgramMapperImpl dtoMapper;
     private final AdherentRepository adherentRepository;
     private final ProgramRepository programRepository;
 
-    public RegistrationProgramServiceImpl(RegistrationProgramRepository registrationProgramRepository, ProgramMapperImpl dtoMapper,
-                                          AdherentRepository adherentRepository, ProgramRepository programRepository) {
-        this.registrationProgramRepository = registrationProgramRepository;
-        this.dtoMapper = dtoMapper;
-        this.adherentRepository = adherentRepository;
-        this.programRepository = programRepository;
-    }
 
     @Override
     public List<RegistrationProgramResponseDto> AllRegistrations() {
@@ -102,13 +95,13 @@ public class RegistrationProgramServiceImpl implements RegistrationProgramServic
     }
 
     @Override
-    public RegistrationProgramResponseDto registrationInProgram(LocalDateTime registeredAt, String adherentDtoUserName, String programDtoName) throws AdherentUserNameNotFoundException, ProgramNameNotFoundException {
+    public RegistrationProgramResponseDto registrationInProgram(LocalDateTime registeredAt, String adherentDtoUserName, String programDtoName) throws AdherentEmailNotFoundException, ProgramNameNotFoundException {
         log.info("inscription  de l'adherent '{}' done le programme '{}'",adherentDtoUserName,programDtoName);
 
-        Adherent adherent = adherentRepository.findByUsername(adherentDtoUserName);
+        Adherent adherent = adherentRepository.findByEmail(adherentDtoUserName);
         if (adherent==null){
             log.warn("Adherent avec userName '{}' non trouvé",adherentDtoUserName);
-            throw new AdherentUserNameNotFoundException("Adherent avec userName '"+adherentDtoUserName+"' non trouvé ");
+            throw new AdherentEmailNotFoundException("Adherent avec userName '"+adherentDtoUserName+"' non trouvé ");
         }
 
         Program program =programRepository.findByNom(programDtoName);

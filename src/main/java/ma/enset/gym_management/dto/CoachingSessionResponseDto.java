@@ -18,7 +18,8 @@ public class CoachingSessionResponseDto{
     private Long id;
 
     private LocalDateTime dateInscriptionSession;
-    private String statute;
+
+    private boolean statute;
 
     private Adherent adherent;
 

@@ -9,17 +9,20 @@ import java.util.*;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Getter @Setter @Builder
+
 public class Exercise {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
     private String nom;
 
+    @Column(nullable = false)
     private String description;
 
-    @Temporal(TemporalType.TIME)
-    private Date duree;
+    private int repetitions;
+    private int series;
 
     @Enumerated(EnumType.STRING)
     private ExerciseCategorie categorie;

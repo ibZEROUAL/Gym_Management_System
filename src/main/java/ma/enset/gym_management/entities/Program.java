@@ -1,5 +1,6 @@
 package ma.enset.gym_management.entities;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -17,7 +18,7 @@ public class Program {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false , unique = true)
     private String nom;
 
     @Enumerated(EnumType.STRING)

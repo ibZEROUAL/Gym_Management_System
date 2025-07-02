@@ -1,0 +1,17 @@
+<nav class="navbar" [class.scrolled]="scrolled">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">Gym Management System</a>
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Toggle menu">
+      <i class="material-icons">{{ isMenuOpen ? 'close' : 'menu' }}</i>
+    </button>
+    <div class="navbar-menu" [class.open]="isMenuOpen">
+      <a class="navbar-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a class="navbar-item" routerLink="/adherents" routerLinkActive="active">Adherents</a>
+      <a class="navbar-item" routerLink="/coaches" routerLinkActive="active">Coaches</a>
+      <a class="navbar-item" routerLink="/exercises" routerLinkActive="active">Exercises</a>
+      <a class="navbar-item" routerLink="/programs" routerLinkActive="active">Programs</a>
+      <a class="navbar-item" routerLink="/registrations" routerLinkActive="active">Registrations</a>
+      <a class="navbar-item" routerLink="/repasts" routerLinkActive="active">Repasts</a>
+    </div>
+  </div>
+</nav>

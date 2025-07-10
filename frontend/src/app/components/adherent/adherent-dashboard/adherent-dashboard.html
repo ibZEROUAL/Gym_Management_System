@@ -1,0 +1,62 @@
+<div class="dashboard-container">
+  <h2>Bienvenue, {{ adherent.firstName }} {{ adherent.nom }}</h2>
+
+  <div class="profile-section">
+    <h3>Mon Profil</h3>
+    <div class="profile-info">
+      <p><strong>Nom complet:</strong> {{ adherent.firstName }} {{ adherent.nom }}</p>
+      <p><strong>Email:</strong> {{ adherent.email }}</p>
+      <p><strong>Téléphone:</strong> {{ adherent.phone || 'Non renseigné' }}</p>
+      <p><strong>Genre:</strong> {{ adherent.gender || 'Non renseigné' }}</p>
+      <p><strong>Âge:</strong> {{ adherent.age || 'Non renseigné' }}</p>
+      <p><strong>Poids:</strong> {{ adherent.poids || 'Non renseigné' }}</p>
+    </div>
+
+    <button (click)="toggleEdit()" class="edit-btn">
+      {{ editMode ? 'Annuler' : 'Modifier le profil' }}
+    </button>
+
+    <form *ngIf="editMode" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Prénom</label>
+        <input formControlName="firstName" type="text" />
+      </div>
+
+      <div class="form-group">
+        <label>Nom</label>
+        <input formControlName="nom" type="text" />
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input formControlName="email" type="email" />
+      </div>
+
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input formControlName="phone" type="text" />
+      </div>
+
+      <div class="form-group">
+        <label>Genre</label>
+        <select formControlName="genre">
+          <option value="HOMME">Homme</option>
+          <option value="FEMME">Femme</option>
+          <option value="AUTRE">Autre</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Âge</label>
+        <input formControlName="age" type="number" />
+      </div>
+
+      <div class="form-group">
+        <label>Poids</label>
+        <input formControlName="poids" type="number" />
+      </div>
+
+      <button type="submit" class="save-btn" [disabled]="profileForm.invalid">Enregistrer</button>
+    </form>
+  </div>
+</div>

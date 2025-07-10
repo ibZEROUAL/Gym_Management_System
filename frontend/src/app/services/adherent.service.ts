@@ -23,9 +23,10 @@ export class AdherentService {
     return this.apiService.post<Adherent>(this.endpoint, adherent);
   }
 
-  updateAdherent(id: number, adherent: Adherent): Observable<Adherent> {
-    return this.apiService.put<Adherent>(this.endpoint, id, adherent);
+  updateAdherent(id: number | undefined, adherent: Adherent): Observable<Adherent> {
+    return this.apiService.put<Adherent>(this.endpoint , id, adherent);
   }
+
 
   deleteAdherent(id: number): Observable<any> {
     return this.apiService.delete<any>(this.endpoint, id);

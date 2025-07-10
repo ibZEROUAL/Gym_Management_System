@@ -12,6 +12,9 @@ import { RegistrationList } from './components/registration/registration-list/re
 import { RegistrationDetail } from './components/registration/registration-detail/registration-detail';
 import { RepastList } from './components/repast/repast-list/repast-list';
 import { RepastDetail } from './components/repast/repast-detail/repast-detail';
+import {Register} from './components/register/register';
+import {AdherentDashboard} from './components/adherent/adherent-dashboard/adherent-dashboard';
+import {Authentication} from './components/authentication/authentication';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -22,10 +25,14 @@ export const routes: Routes = [
   { path: 'exercises', component: ExerciseList },
   { path: 'exercises/:id', component: ExerciseDetail },
   { path: 'programs', component: ProgramList },
-  { path: 'programs/:id', component: ProgramDetail },
   { path: 'registrations', component: RegistrationList },
   { path: 'registrations/:id', component: RegistrationDetail },
   { path: 'repasts', component: RepastList },
   { path: 'repasts/:id', component: RepastDetail },
+  { path: 'register', component: Register },
+  { path: 'authentication', component: Authentication },
+
+  { path: 'adherentDashboard', component: AdherentDashboard },
   { path: '**', redirectTo: '' }
+
 ];

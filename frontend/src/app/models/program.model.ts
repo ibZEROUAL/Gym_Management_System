@@ -15,15 +15,11 @@ export enum ProgramObjective {
 }
 
 export interface Program {
-  id?: number;
-  name: string;
-  description: string;
-  level: ProgramLevel;
-  objective: ProgramObjective;
-  durationInWeeks: number;
-  isVisible: boolean;
-  creationDate?: Date;
-  exercises?: number[]; // IDs of exercises
-  repasts?: number[]; // IDs of repasts
-  coachId?: number;
+  "nom": string,
+  "niveau": ProgramLevel,
+  "description": string,
+  "dureeEnSemaines": number,
+  "visibilite": boolean,
+  "objective": ProgramObjective,
+  "coach": number
 }

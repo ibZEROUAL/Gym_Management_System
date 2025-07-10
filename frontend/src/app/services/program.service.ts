@@ -7,7 +7,7 @@ import { Program, ProgramLevel, ProgramObjective } from '../models/program.model
   providedIn: 'root'
 })
 export class ProgramService {
-  private endpoint = 'programs';
+  private endpoint = 'program';
 
   constructor(private apiService: ApiService) { }
 

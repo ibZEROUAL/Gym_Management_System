@@ -13,7 +13,7 @@ public interface CoachService {
     List<CoachResponseDto> AllCoach() throws CoachsNotFoundException;
     CoachResponseDto getCoachByID(Long id) throws CoachIdNotFoundException;
 
-    CoachResponseDto getCoachByUserName(String userName) throws CoachNameNotFoundException;
+    CoachResponseDto getCoachByEmail(String email) throws CoachEmailNotFoundException;
 
     List<CoachResponseDto> getCoachBySpeciality(String speciality) throws CoachSpecialityNotFoundException;
 
@@ -21,5 +21,5 @@ public interface CoachService {
 
     CoachResponseDto updateCoach(long coachId, CoachDto coachDto) throws CoachIdNotFoundException;
 
-    void deleteCoch(Long coachId);
+    void deleteCoach(Long coachId);
 }

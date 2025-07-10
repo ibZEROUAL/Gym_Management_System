@@ -222,4 +222,21 @@ public class ProgramMapperImpl {
         return coachingSessionResponseDto;
     }
 
+    public SubscriptionResponseDto mapSubsToSubsResDTO(Subscription subscription) {
+        SubscriptionResponseDto subscriptionResponseDto = new SubscriptionResponseDto();
+        BeanUtils.copyProperties(subscription, subscriptionResponseDto);
+        subscriptionResponseDto.setAdherents(subscription.getAdherents().stream().map(this::mapToAdherentResponseDTO).collect(Collectors.toList()));
+
+        return subscriptionResponseDto;
+    }
+
+    public ProgressTrackingResponseDto mapToTrackingResp(ProgressTracking tracking) {
+        ProgressTrackingResponseDto trackingResponseDto = new ProgressTrackingResponseDto();
+        BeanUtils.copyProperties(tracking, trackingResponseDto);
+        trackingResponseDto.setAdherentId(tracking.getAdherent().getId());
+        trackingResponseDto.setAdherentEmail(tracking.getAdherent().getEmail());
+        return trackingResponseDto;
+    }
+
+
 }

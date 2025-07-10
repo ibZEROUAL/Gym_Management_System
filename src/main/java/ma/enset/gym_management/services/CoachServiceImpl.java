@@ -1,5 +1,7 @@
 package ma.enset.gym_management.services;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import ma.enset.gym_management.dto.*;
@@ -9,6 +11,7 @@ import ma.enset.gym_management.mappers.ProgramMapperImpl;
 import ma.enset.gym_management.repositories.CoachRepository;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +21,14 @@ import java.util.List;
 
 @Service
 @Transactional
+@AllArgsConstructor
 @Slf4j
 public class CoachServiceImpl implements CoachService {
     private final CoachRepository coachRepository;
     private final ProgramMapperImpl dtoMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public CoachServiceImpl(CoachRepository coachRepository, ProgramMapperImpl dtoMapper) {
-        this.coachRepository = coachRepository;
-        this.dtoMapper = dtoMapper;
-    }
+
     @Override
     public List<CoachResponseDto> AllCoach() throws CoachsNotFoundException {
         log.info("Recherche tous les coaches ");
@@ -54,12 +56,12 @@ public class CoachServiceImpl implements CoachService {
         return dtoMapper.mapToCoachRespDto(coach);
     }
     @Override
-    public CoachResponseDto getCoachByUserName(String userName) throws CoachNameNotFoundException {
-        log.info("Recherche des Coaches avec le nom d'utilisateur = {}", userName);
-        Coach coach = coachRepository.findByUsername(userName);
+    public CoachResponseDto getCoachByEmail(String email) throws CoachEmailNotFoundException {
+        log.info("Recherche des Coaches avec le userName d'utilisateur = {}", email);
+        Coach coach = coachRepository.findByEmail(email);
         if (coach==null) {
-            log.warn("Aucun coach trouvé avec le userName = {}", userName);
-            throw new CoachNameNotFoundException("Coach avec le userName '"+userName+"' non trouvé");
+            log.warn("Aucun coach trouvé avec le userName = {}", email);
+            throw new CoachEmailNotFoundException("Coach avec le userName '"+email+"' non trouvé");
         }
         return dtoMapper.mapToCoachRespDto(coach);
     }
@@ -81,15 +83,16 @@ public class CoachServiceImpl implements CoachService {
     }
     @Override
     public CoachResponseDto addCoach(CoachDto coachDto) throws CoachAlreadyExistsException {
-        log.info("Ajout d’un nouvel Coach : {}", coachDto.getUsername());
-        Coach coach = coachRepository.findByUsername(coachDto.getUsername());
+        log.info("Ajout d’un nouvel Coach : {}", coachDto.getEmail());
+        Coach coach = coachRepository.findByEmail(coachDto.getEmail());
 
         if (coach != null){
-            log.warn("le coach avec UserName '{}' est exisite d'éja",coach.getUsername());
-            throw new CoachAlreadyExistsException("le coach '"+coach.getUsername()+"' est exisite d'éja!");
+            log.warn("le coach avec UserName '{}' est exisite d'éja",coach.getEmail());
+            throw new CoachAlreadyExistsException("le coach '"+coach.getEmail()+"' est exisite d'éja!");
         }
-
-        Coach newCoach= coachRepository.save(dtoMapper.mapDtoToCoach(coachDto));
+        Coach coachAdd = dtoMapper.mapDtoToCoach(coachDto);
+        coachAdd.setPassword(passwordEncoder.encode(coachDto.getPassword()));
+        Coach newCoach= coachRepository.save(coachAdd);
         return dtoMapper.mapToCoachRespDto(newCoach);
     }
     @Override
@@ -104,7 +107,7 @@ public class CoachServiceImpl implements CoachService {
     }
 
     @Override
-    public void deleteCoch(Long coachId) {
+    public void deleteCoach(Long coachId) {
         log.info("Supprimé le coach avec le ID = {}", coachId);
 
         coachRepository.deleteById(coachId);

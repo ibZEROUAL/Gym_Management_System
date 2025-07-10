@@ -1,6 +1,7 @@
 package ma.enset.gym_management.services;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.enset.gym_management.dto.*;
 import ma.enset.gym_management.entities.Coach;
@@ -15,7 +16,7 @@ import ma.enset.gym_management.repositories.ExerciseRepository;
 import ma.enset.gym_management.repositories.ProgramRepository;
 import ma.enset.gym_management.repositories.RepastRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Slf4j
+@AllArgsConstructor
 public class ProgramServiceImpl implements ProgramService {
     private final ProgramRepository programRepository;
     private final ExerciseRepository exerciseRepository;
@@ -37,13 +39,6 @@ public class ProgramServiceImpl implements ProgramService {
     //Logger log= LoggerFactory.getLogger(this.getClass().getName());
 
 
-    public ProgramServiceImpl(ProgramRepository programRepository, ExerciseRepository exerciseRepository, ProgramMapperImpl dtoMapper, CoachRepository coachRepository, RepastRepository repastRepository) {
-        this.programRepository = programRepository;
-        this.exerciseRepository = exerciseRepository;
-        this.dtoMapper = dtoMapper;
-        this.repastRepository = repastRepository;
-        this.coachRepository = coachRepository;
-    }
     @Override
     public List<ProgramResponseDto> allPrograms() throws ProgramsNotFoundException {
         log.info("Recherche des programmes ");

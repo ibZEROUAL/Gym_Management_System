@@ -1,0 +1,56 @@
+.program-list-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem;
+
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+  }
+
+  .program-card {
+    background: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    h3 {
+      margin-top: 0;
+      color: #007bff;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0.5rem 0;
+
+      strong {
+        color: #555;
+      }
+
+      span {
+        font-weight: bold;
+        &.visible {
+          color: #28a745;
+        }
+
+        &.invisible {
+          color: #dc3545;
+        }
+      }
+    }
+  }
+
+  .empty-message {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+  }
+}

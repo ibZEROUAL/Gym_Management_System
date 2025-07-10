@@ -1,18 +1,19 @@
 package ma.enset.gym_management.web;
 
 
+import jakarta.validation.Valid;
 import ma.enset.gym_management.dto.RegistrationProgramResponseDto;
 import ma.enset.gym_management.exceptions.*;
 import ma.enset.gym_management.services.RegistrationProgramService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Validated
 @RestController
-@RequestMapping("/registrationProgram")
+@RequestMapping("/api/registrationProgram")
 public class RegistrationProgramRestController {
     RegistrationProgramService registrationProgramService;
 
@@ -30,7 +31,7 @@ public class RegistrationProgramRestController {
         return ResponseEntity.ok(registrationProgramService.getRegistrationsById(id));
     }
     @GetMapping(path = "/registrationDate")
-    public ResponseEntity<RegistrationProgramResponseDto> getRegistrationByDate(@RequestParam LocalDateTime date) throws RegistrationProgramDateNotFoundException {
+    public ResponseEntity<RegistrationProgramResponseDto> getRegistrationByDate(@Valid @RequestParam LocalDateTime date) throws RegistrationProgramDateNotFoundException {
         return ResponseEntity.ok(registrationProgramService.getRegistrationByRegisteredAt(date));
     }
     @GetMapping(path = "/registrationOfAdherent/{adherentId}")
@@ -42,7 +43,7 @@ public class RegistrationProgramRestController {
         return ResponseEntity.ok(registrationProgramService.getRegistrationByProgram(programId));
     }
     @PostMapping(path = "/registration")
-    public ResponseEntity<RegistrationProgramResponseDto> registrationInProgram(@RequestBody  LocalDateTime registeredAt, @RequestParam String adherentDtoUserName, @RequestParam String programDtoName) throws ProgramNameNotFoundException, AdherentUserNameNotFoundException {
+    public ResponseEntity<RegistrationProgramResponseDto> registrationInProgram(@Valid @RequestBody  LocalDateTime registeredAt, @Valid @RequestParam String adherentDtoUserName, @RequestParam String programDtoName) throws ProgramNameNotFoundException, AdherentEmailNotFoundException {
 
         return ResponseEntity.ok(registrationProgramService.registrationInProgram(registeredAt,adherentDtoUserName,programDtoName));
     }

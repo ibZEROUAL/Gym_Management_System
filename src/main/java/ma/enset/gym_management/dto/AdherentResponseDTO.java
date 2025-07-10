@@ -15,7 +15,7 @@ public class AdherentResponseDTO {
 
     private String nom;
 
-    private String username;
+    private String email;
 
     private Collection<RegistrationProgramDto> registrations = new ArrayList<>();
 }

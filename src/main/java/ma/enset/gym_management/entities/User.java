@@ -1,6 +1,8 @@
 package ma.enset.gym_management.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ma.enset.gym_management.enums.Role;
@@ -18,23 +20,22 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="role",
+@DiscriminatorColumn(name="type",
         discriminatorType = DiscriminatorType.STRING)
 public class User implements UserDetails {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-   /*
-   private String firstname;
-    private String lastname;
-    */
-   @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100)
     private String nom;
 
-    @Column(unique = true ,nullable = false, length = 100)
-    private String username;
+    @Email
+    @NotBlank
+    @Column(unique = true, nullable = false, length = 100)
+    private String email;
 
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -43,37 +44,31 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return null;
     }
 
     @Override
-    public String getPassword() {
-        return password;
+    public String getUsername() {
+        return null;
     }
 
-    @Override
-    public String getUsername(){
-        return username;
-    }
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return UserDetails.super.isEnabled();
     }
-
-
 }

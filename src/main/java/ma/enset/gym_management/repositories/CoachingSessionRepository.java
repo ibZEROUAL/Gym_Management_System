@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CoachingSessionRepository extends JpaRepository<CoachingSession, Long> {
     CoachingSession findByDateInscriptionSession(LocalDateTime dateInscriptionSession);
-    List<CoachingSession> findByStatute(String statute);
+    List<CoachingSession> findByStatute(boolean statute);
     CoachingSession findByCoach_Id(Long id);
     CoachingSession findByAdherent_Id(Long id);
 }

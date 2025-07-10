@@ -1,5 +1,6 @@
 package ma.enset.gym_management.web;
 
+import jakarta.validation.Valid;
 import ma.enset.gym_management.dto.ExerciseDto;
 import ma.enset.gym_management.dto.ExerciseResponseDto;
 import ma.enset.gym_management.enums.ExerciseCategorie;
@@ -7,12 +8,14 @@ import ma.enset.gym_management.exceptions.*;
 import ma.enset.gym_management.services.ExerciseService;
 import ma.enset.gym_management.services.ProgramService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
-@RequestMapping("/exercise")
+@RequestMapping("/api/exercise")
 public class ExerciseRestController {
     private final ExerciseService exerciseService;
     public ExerciseRestController(ExerciseService exerciseService) {
@@ -41,12 +44,12 @@ public class ExerciseRestController {
     }
 
     @PostMapping(path = "/createExercise")
-    public ResponseEntity<ExerciseResponseDto> createExercise(@RequestBody ExerciseDto exerciseDto) throws ExerciseAlreadyExistsException {
+    public ResponseEntity<ExerciseResponseDto> createExercise(@Valid @RequestBody ExerciseDto exerciseDto) throws ExerciseAlreadyExistsException {
         return ResponseEntity.ok(exerciseService.createExercise(exerciseDto));
     }
 
     @PutMapping(path = "/updateExercise/{exerciseId}")
-    public ResponseEntity<ExerciseResponseDto> updateExercise(@PathVariable Long exerciseId, @RequestBody ExerciseDto exerciseDto) throws ExerciseIdNotFoundException {
+    public ResponseEntity<ExerciseResponseDto> updateExercise(@PathVariable Long exerciseId,@Valid @RequestBody ExerciseDto exerciseDto) throws ExerciseIdNotFoundException {
         return ResponseEntity.ok(exerciseService.updateExercise(exerciseId,exerciseDto));
     }
     @DeleteMapping(path = "/deleteExercise/{exerciseId}")

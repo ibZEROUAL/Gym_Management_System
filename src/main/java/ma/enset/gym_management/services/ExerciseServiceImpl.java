@@ -1,5 +1,6 @@
 package ma.enset.gym_management.services;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.enset.gym_management.dto.ExerciseDto;
 import ma.enset.gym_management.dto.ExerciseResponseDto;
@@ -20,16 +21,12 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Slf4j
+@AllArgsConstructor
 public class ExerciseServiceImpl implements ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final ProgramMapperImpl dtoMapper;
     private final ProgramRepository programRepository;
 
-    public ExerciseServiceImpl(ExerciseRepository exerciseRepository, ProgramMapperImpl dtoMapper, ProgramRepository programRepository) {
-        this.exerciseRepository = exerciseRepository;
-        this.dtoMapper = dtoMapper;
-        this.programRepository = programRepository;
-    }
 
     @Override
     public List<ExerciseResponseDto> allExercises() throws ExercisesNotFoundException {

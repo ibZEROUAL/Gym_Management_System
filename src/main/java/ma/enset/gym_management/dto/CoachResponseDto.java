@@ -15,7 +15,7 @@ import java.util.Collection;
 public class CoachResponseDto {
     private Long id;
     private String nom;
-    private String username;
+    private String email;
     private String specialite;
 
     private Collection<ProgramResponseDto> programResponseDto = new ArrayList<>();

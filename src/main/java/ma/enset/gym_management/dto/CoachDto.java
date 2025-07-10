@@ -22,7 +22,10 @@ public class CoachDto {
 
     @NotNull(message = "Le username est obligatoire.")
     @Size(min = 4, message = "Le username doit contenir au moins 5 caractères.")
-    private String username;
+    private String email;
+
+    private String password;
+
     private String specialite;
 
 

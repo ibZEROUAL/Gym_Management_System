@@ -1,0 +1,16 @@
+<div class="program-grid">
+  <div class="program-card" *ngFor="let program of list">
+    <h3>{{ program.nom }}</h3>
+    <p><strong>Description :</strong> {{ program.description }}</p>
+    <p><strong>Niveau :</strong> {{ program.niveau }}</p>
+    <p><strong>Objectif :</strong> {{ program.objective }}</p>
+    <p><strong>Durée :</strong> {{ program.dureeEnSemaines }} semaines</p>
+    <p>
+      <strong>Visibilité :</strong>
+      <span [ngClass]="program.visibilite ? 'visible' : 'invisible'">
+        {{ program.visibilite ? 'Public' : 'Privé' }}
+      </span>
+    </p>
+    <p><strong>Coach ID :</strong> {{ program.coach }}</p>
+  </div>
+</div>

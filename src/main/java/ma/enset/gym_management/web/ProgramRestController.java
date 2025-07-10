@@ -1,17 +1,20 @@
 package ma.enset.gym_management.web;
 
+import jakarta.validation.Valid;
 import ma.enset.gym_management.dto.ProgramDto;
 import ma.enset.gym_management.dto.ProgramResponseDto;
 import ma.enset.gym_management.enums.ProgramLevel;
 import ma.enset.gym_management.exceptions.*;
 import ma.enset.gym_management.services.ProgramService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
-@RequestMapping("/program")
+@RequestMapping("/api/program")
 public class ProgramRestController {
     private final ProgramService programService;
 
@@ -56,7 +59,7 @@ public class ProgramRestController {
 
 
     @PostMapping(path = "/create")
-    public ResponseEntity<ProgramResponseDto> createProgram(@RequestBody ProgramDto programDto) throws ProgramAlreadyExistsException {
+    public ResponseEntity<ProgramResponseDto> createProgram(@Valid @RequestBody ProgramDto programDto) throws ProgramAlreadyExistsException {
         return ResponseEntity.ok(programService.createProgram(programDto)) ;
     }
     @PostMapping(path ="/{programId}/exercises/{exerciseId}")
@@ -65,7 +68,7 @@ public class ProgramRestController {
     }
 
     @PutMapping(path = "/updateProgram/{programId}")
-    public ResponseEntity<ProgramResponseDto> updateProgram(@PathVariable Long programId, @RequestBody ProgramDto programDto) throws ProgramIdNotFoundException {
+    public ResponseEntity<ProgramResponseDto> updateProgram(@PathVariable Long programId,@Valid @RequestBody ProgramDto programDto) throws ProgramIdNotFoundException {
         return ResponseEntity.ok(programService.updateProgram(programId,programDto));
     }
     @DeleteMapping(path = "/deleteProgram/{programId}")

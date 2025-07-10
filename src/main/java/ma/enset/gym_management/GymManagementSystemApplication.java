@@ -1,15 +1,10 @@
 package ma.enset.gym_management;
 
-import ma.enset.gym_management.entities.Exercise;
-import ma.enset.gym_management.enums.ExerciseCategorie;
 import ma.enset.gym_management.repositories.ExerciseRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.Date;
-import java.util.stream.Stream;
 
 
 @SpringBootApplication

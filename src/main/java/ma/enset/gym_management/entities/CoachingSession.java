@@ -14,7 +14,9 @@ public class CoachingSession {
     private Long id;
 
     private LocalDateTime dateInscriptionSession;
-    private String statute;
+
+
+    private boolean statute;
 
     @ManyToOne
     private Adherent adherent;
